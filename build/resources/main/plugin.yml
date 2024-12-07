@@ -1,0 +1,30 @@
+name: CropPlugin
+version: '1.0-SNAPSHOT'
+main: me.gibson.cropPlugin.FarmTycoonPlugin
+api-version: '1.21'
+softdepend: ["PlaceholderAPI"]
+commands:
+  farmgui:
+    description: Open the crop selection GUI.
+    usage: /farmgui
+    permission: farmtycoon.use
+    permission-message: You do not have permission to use this command.
+  prestige:
+    description: Prestige to the next level.
+    usage: /prestige
+    permission: prestige.use
+  condense:
+    description: Condense crops into higher levels.
+    usage: /condense
+    permission: farmtycoon.condense
+  sell:
+    description: Sell crops in your inventory.
+    usage: /sell
+
+permissions:
+  farmtycoon.use:
+    description: Permission to use the farmgui command.
+    default: true
+  farmtycoon.admin:
+    description: Permission to manage player prestige levels.
+    default: op

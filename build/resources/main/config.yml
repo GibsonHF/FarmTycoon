@@ -1,0 +1,48 @@
+# Farm Tycoon Plugin Configuration
+farmRegion:
+  name: "FarmRegion"
+prestige:
+  multiplierIncrement: 0.25
+crops:
+  wheat:
+    blockMaterial: WHEAT
+    itemMaterial: WHEAT
+    displayName: "Wheat"
+    requiredPrestige: 0
+    xp: 5
+
+  carrots:
+    blockMaterial: CARROTS
+    itemMaterial: CARROT
+    displayName: "Carrots"
+    requiredPrestige: 5
+    xp: 10
+
+  potatoes:
+    blockMaterial: POTATOES
+    itemMaterial: POTATO
+    displayName: "Potatoes"
+    requiredPrestige: 10
+    xp: 15
+
+  beetroots:
+    blockMaterial: BEETROOTS
+    itemMaterial: BEETROOT
+    displayName: "Beetroots"
+    requiredPrestige: 15
+    xp: 20
+
+  blue_orchid:
+    blockMaterial: BLUE_ORCHID
+    itemMaterial: BLUE_ORCHID
+    displayName: "Blue Orchid"
+    requiredPrestige: 20
+    xp: 25
+
+  lilac:
+    blockMaterial: LILAC
+    itemMaterial: LILAC
+    displayName: "Lilac"
+    requiredPrestige: 25
+    xp: 30
+
