@@ -7,12 +7,9 @@ commands:
   farmgui:
     description: Open the crop selection GUI.
     usage: /farmgui
-    permission: farmtycoon.use
-    permission-message: You do not have permission to use this command.
   prestige:
     description: Prestige to the next level.
     usage: /prestige
-    permission: prestige.use
   condense:
     description: Condense crops into higher levels.
     usage: /condense
@@ -20,11 +17,15 @@ commands:
   sell:
     description: Sell crops in your inventory.
     usage: /sell
-
+  gems:
+    description: Manage player gems
+    usage: /gems <add|set|pay> <player> <amount>
+  ggwave:
+    description: Send a message to all players.
+    usage: /ggwave <player>
+    permission: farmtycoon.admin
+    permission-message: You do not have permission to use this command.
 permissions:
-  farmtycoon.use:
-    description: Permission to use the farmgui command.
-    default: true
   farmtycoon.admin:
     description: Permission to manage player prestige levels.
     default: op

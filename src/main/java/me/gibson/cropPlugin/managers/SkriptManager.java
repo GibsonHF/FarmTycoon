@@ -79,4 +79,26 @@ public class SkriptManager {
         double currentMultiplier = getMultiplier(player);
         Variables.setVariable(variableName, currentMultiplier + amount, null, false);
     }
+
+    //add player gems
+    public static void addGems(Player player, int amount) {
+        String variableName = "gems::" + player.getUniqueId();
+        int currentGems = getGems(player);
+        Variables.setVariable(variableName, currentGems + amount, null, false);
+    }
+
+    public static void setGems(Player player, int amount) {
+        String variableName = "gems::" + player.getUniqueId();
+        Variables.setVariable(variableName, amount, null, false);
+    }
+
+    public static int getGems(Player player) {
+        String variableName = "gems::" + player.getUniqueId();
+        Object gems = Variables.getVariable(variableName, null, false);
+
+        if (gems instanceof Number) {
+            return ((Number) gems).intValue();
+        }
+        return 0;
+    }
 }

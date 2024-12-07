@@ -125,6 +125,8 @@ public class FarmTycoonListener implements Listener {
             for (int z = minZ; z <= maxZ; z++) {
                 for (int y = region.getMinimumPoint().getBlockY(); y <= region.getMaximumPoint().getBlockY(); y++) {
                     Block block = world.getBlockAt(x, y, z);
+                    //if block is air skip
+                    if(block.getType() == Material.AIR) continue;
 
                     if (isCropType(block.getType())) {
                         Material selectedCrop = plugin.getSelectedCrop(player);

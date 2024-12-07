@@ -1,17 +1,13 @@
 package me.gibson.cropPlugin;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
-import me.gibson.cropPlugin.commands.CondenseCommand;
-import me.gibson.cropPlugin.commands.FarmGUICommand;
-import me.gibson.cropPlugin.commands.PrestigeCommand;
-import me.gibson.cropPlugin.commands.SellCommand;
+import me.gibson.cropPlugin.commands.*;
 import me.gibson.cropPlugin.listeners.FarmTycoonListener;
+import me.gibson.cropPlugin.commands.GGWaveCommand;
 import me.gibson.cropPlugin.managers.EconomyManager;
 import me.gibson.cropPlugin.managers.PrestigeManager;
 import me.gibson.cropPlugin.placeholders.PrestigePlaceholder;
@@ -64,6 +60,9 @@ public class FarmTycoonPlugin extends JavaPlugin {
         getCommand("prestige").setExecutor(new PrestigeCommand());
         getCommand("condense").setExecutor(new CondenseCommand());
         getCommand("sell").setExecutor(new SellCommand(EconomyManager.getEconomy()));
+        getCommand("gems").setExecutor(new GemsCommand());
+        getCommand("ggwave").setExecutor(new GGWaveCommand(this));
+        getServer().getPluginManager().registerEvents(new GGWaveCommand(this), this);
         getServer().getPluginManager().registerEvents(new FarmTycoonListener(this), this);
 
         getLogger().info("FarmTycoonPlugin Enabled!");
@@ -111,11 +110,6 @@ public class FarmTycoonPlugin extends JavaPlugin {
         return selectedCrop;
     }
 
-    // Player Block Data Management
-    public Map<Location, Material> getPlayerBlockData(Player player) {
-        return playerBlockData.computeIfAbsent(player.getUniqueId(), k -> new HashMap<>());
-    }
-
     public void setPlayerBlockData(UUID playerId, Map<Location, Material> blockData) {
         playerBlockData.put(playerId, blockData);
     }
@@ -143,37 +137,6 @@ public class FarmTycoonPlugin extends JavaPlugin {
         return null;
     }
 
-    private void keepRegionChunksLoaded(String regionName) {
-        RegionManager regionManager = getRegionManager(Bukkit.getWorld("GensSpawn")); // Replace "world" with your world name
-        if (regionManager == null) return;
-
-        ProtectedRegion region = regionManager.getRegion(regionName);
-        if (region == null) return;
-
-        BlockVector3 min = region.getMinimumPoint();
-        BlockVector3 max = region.getMaximumPoint();
-
-        World world = Bukkit.getWorld("world");
-        if (world == null) return;
-
-        for (int x = min.getBlockX() >> 4; x <= max.getBlockX() >> 4; x++) {
-            for (int z = min.getBlockZ() >> 4; z <= max.getBlockZ(); z++) {
-                Chunk chunk = world.getChunkAt(x, z);
-                chunk.setForceLoaded(true); // Keep the chunk loaded
-            }
-        }
-
-        getLogger().info("Chunks in region " + regionName + " are now force-loaded.");
-    }
-
     public final Map<UUID, BukkitRunnable> playerTasks = new HashMap<>();
-
-
-    public void cancelPlayerTask(UUID playerId) {
-        if (playerTasks.containsKey(playerId)) {
-            playerTasks.get(playerId).cancel();
-            playerTasks.remove(playerId);
-        }
-    }
 
 }
