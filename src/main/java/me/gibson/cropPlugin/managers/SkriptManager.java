@@ -6,12 +6,12 @@ import org.bukkit.entity.Player;
 public class SkriptManager {
 
     // Get player's tokens
-    public static int getTokens(Player player) {
+    public static double getTokens(Player player) {
         String variableName = "tokens::" + player.getUniqueId();
         Object tokens = Variables.getVariable(variableName, null, false);
 
         if (tokens instanceof Number) {
-            return ((Number) tokens).intValue();
+            return ((Number) tokens).doubleValue();
         }
         return 0;
     }
@@ -19,13 +19,13 @@ public class SkriptManager {
     // Add tokens to a player
     public static void addTokens(Player player, int amount) {
         String variableName = "tokens::" + player.getUniqueId();
-        int currentTokens = getTokens(player);
+        double currentTokens = getTokens(player);
         Variables.setVariable(variableName, currentTokens + amount, null, false);
     }
 
     // Deduct tokens from a player
-    public static boolean deductTokens(Player player, int amount) {
-        int currentTokens = getTokens(player);
+    public static boolean deductTokens(Player player, double amount) {
+        double currentTokens = getTokens(player);
 
         if (currentTokens >= amount) {
             String variableName = "tokens::" + player.getUniqueId();

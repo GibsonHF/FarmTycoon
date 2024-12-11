@@ -9,21 +9,21 @@ import com.comphenix.protocol.events.PacketListener;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import me.gibson.cropPlugin.utils.CropType;
+import me.gibson.cropPlugin.types.CropType;
 import me.gibson.cropPlugin.FarmTycoonPlugin;
 import me.gibson.cropPlugin.managers.PrestigeManager;
 import me.gibson.cropPlugin.managers.SkriptManager;
+import me.gibson.cropPlugin.types.OreType;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -31,8 +31,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -40,19 +38,16 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
-public class FarmTycoonListener implements Listener {
+public class FarmListener implements Listener {
     private final FarmTycoonPlugin plugin;
     private ProtocolManager protocolManager;
     private final Random rand;
 
-    // Track the block location and player who broke it (to intercept packets)
-    private Location brokenBlockLocation;
-    private Player breakerPlayer;
 
     // Track last selection time per player to enforce delay between crop changes
     private final Map<UUID, Long> lastSelectionTime = new HashMap<>();
 
-    public FarmTycoonListener(FarmTycoonPlugin plugin) {
+    public FarmListener(FarmTycoonPlugin plugin) {
         this.plugin = plugin;
         this.rand = new Random();
         this.protocolManager = ProtocolLibrary.getProtocolManager();
@@ -170,24 +165,24 @@ public class FarmTycoonListener implements Listener {
 
     public void openCropSelectionGUI(Player player) {
         List<CropType> crops = getSortedCrops();
-        int cropsPerPage = 28; // Number of crops per page
+        int cropsPerPage = 28;
         int totalPages = (int) Math.ceil((double) crops.size() / cropsPerPage);
 
-        setTotalPages(player, totalPages);
-        setCurrentPage(player, 0);
+        setTotalPages(player, Math.max(totalPages, 1)); // Ensure at least 1 page
+        setCurrentPage(player, 1); // Start on page 1
 
-        openCropPage(player, crops, 0, totalPages);
+        openCropPage(player, crops, 1); // Open the first page
     }
 
+    private void openCropPage(Player player, List<CropType> crops, int page) {
+        int cropsPerPage = 28;
+        int totalPages = (int) Math.ceil((double) crops.size() / cropsPerPage); // Dynamically calculate total pages
 
-    private void openCropPage(Player player, List<CropType> crops, int page, int totalPages) {
-        int playerPrestige = PrestigeManager.getPlayerPrestige(player);
 
-        int cropsPerPage = 28; // Number of crops displayed per page
-        int startIndex = page * cropsPerPage;
+        int startIndex = (page - 1) * cropsPerPage; // Convert to 0-based index
         int endIndex = Math.min(startIndex + cropsPerPage, crops.size());
 
-        Inventory gui = Bukkit.createInventory(null, 54, "Select a Crop - Page " + (page + 1));
+        Inventory gui = Bukkit.createInventory(null, 54, "Select a Crop - Page " + page + " of " + totalPages);
 
         // Fill GUI with filler items
         ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
@@ -213,25 +208,25 @@ public class FarmTycoonListener implements Listener {
 
         for (int i = startIndex, slotIndex = 0; i < endIndex && slotIndex < cropSlots.length; i++, slotIndex++) {
             CropType crop = crops.get(i);
-            gui.setItem(cropSlots[slotIndex], crop.toItemStack(playerPrestige));
+            gui.setItem(cropSlots[slotIndex], crop.toItemStack(PrestigeManager.getPlayerPrestige(player)));
         }
 
         // Add navigation buttons
-        if (page > 0) {
+        if (page > 1) { // Add Previous Page button if not on the first page
             ItemStack previousPage = new ItemStack(Material.ARROW);
             ItemMeta meta = previousPage.getItemMeta();
             if (meta != null) {
-                meta.setDisplayName("§aPrevious Page");
+                meta.setDisplayName(ChatColor.GREEN + "Previous Page");
                 previousPage.setItemMeta(meta);
             }
             gui.setItem(45, previousPage);
         }
 
-        if (page < totalPages - 1) {
+        if (page < totalPages) { // Add Next Page button if not on the last page
             ItemStack nextPage = new ItemStack(Material.ARROW);
             ItemMeta meta = nextPage.getItemMeta();
             if (meta != null) {
-                meta.setDisplayName("§aNext Page");
+                meta.setDisplayName(ChatColor.GREEN + "Next Page");
                 nextPage.setItemMeta(meta);
             }
             gui.setItem(53, nextPage);
@@ -242,24 +237,32 @@ public class FarmTycoonListener implements Listener {
 
 
 
+
+
+
     private final Map<UUID, Integer> currentPageMap = new HashMap<>();
     private final Map<UUID, Integer> totalPagesMap = new HashMap<>();
 
     private int getCurrentPage(Player player) {
-        return currentPageMap.getOrDefault(player.getUniqueId(), 0);
+        int currentPage = currentPageMap.getOrDefault(player.getUniqueId(), 1); // Default to page 1
+        return currentPage;
     }
 
     private void setCurrentPage(Player player, int page) {
         currentPageMap.put(player.getUniqueId(), page);
     }
 
+
     private int getTotalPages(Player player) {
-        return totalPagesMap.getOrDefault(player.getUniqueId(), 1);
+        int totalPages = totalPagesMap.getOrDefault(player.getUniqueId(), 1);
+        return totalPages;
     }
+
 
     private void setTotalPages(Player player, int totalPages) {
         totalPagesMap.put(player.getUniqueId(), totalPages);
     }
+
 
     private List<CropType> getSortedCrops() {
         List<CropType> crops = new ArrayList<>(CropType.getAllCrops());
@@ -282,27 +285,24 @@ public class FarmTycoonListener implements Listener {
 
             String displayName = clickedItem.getItemMeta() != null ? clickedItem.getItemMeta().getDisplayName() : "";
 
-            // Handle navigation
-            if (displayName.equals("§aNext Page")) {
-                // Go to the next page
+            if (displayName.equals(ChatColor.GREEN + "Next Page")) {
                 int currentPage = getCurrentPage(player);
-                int totalPages = getTotalPages(player);
-                if (currentPage + 1 < totalPages) {
-                    setCurrentPage(player, currentPage + 1);
-                    openCropPage(player, getSortedCrops(), currentPage + 1, totalPages);
-                }
-            } else if (displayName.equals("§aPrevious Page")) {
-                // Go to the previous page
+
+
+                setCurrentPage(player, currentPage + 1); // Move to the next page
+                openCropPage(player, getSortedCrops(), currentPage + 1); // Open the next page
+            } else if (displayName.equals(ChatColor.GREEN + "Previous Page")) {
                 int currentPage = getCurrentPage(player);
-                if (currentPage > 0) {
-                    setCurrentPage(player, currentPage - 1);
-                    openCropPage(player, getSortedCrops(), currentPage - 1, getTotalPages(player));
-                }
-            } else {
+
+
+                setCurrentPage(player, currentPage - 1); // Move to the previous page
+                openCropPage(player, getSortedCrops(), currentPage - 1); // Open the previous page
+            }
+            else {
                 // Handle crop selection
                 CropType selectedCrop = CropType.fromMaterial(clickedItem.getType());
                 if (selectedCrop == null) {
-                    player.sendMessage("§cInvalid crop type selected.");
+                    player.sendMessage(ChatColor.RED + "Invalid crop type selected.");
                     return;
                 }
 
@@ -311,7 +311,7 @@ public class FarmTycoonListener implements Listener {
                 if (lastSelectionTime.containsKey(playerId)) {
                     long lastTime = lastSelectionTime.get(playerId);
                     if ((currentTime - lastTime) < 5000) {
-                        player.sendMessage("§cYou can only change crops every 5 seconds!");
+                        player.sendMessage(ChatColor.RED + "You can only change crops every 5 seconds!");
                         return;
                     }
                 }
@@ -321,7 +321,7 @@ public class FarmTycoonListener implements Listener {
                 int playerPrestige = PrestigeManager.getPlayerPrestige(player);
 
                 if (selectedCrop.getRequiredPrestige() > playerPrestige) {
-                    player.sendMessage("§cYou need Prestige " + selectedCrop.getRequiredPrestige() + " to use this crop.");
+                    player.sendMessage(ChatColor.RED + "You need Prestige " + selectedCrop.getRequiredPrestige() + " to use this crop.");
                 } else {
                     plugin.setSelectedCrop(player, selectedCrop.getBlockMaterial());
                     ProtectedRegion region = plugin.getRegionManager(player.getWorld()).getRegion(plugin.getFarmRegionName());
@@ -329,7 +329,7 @@ public class FarmTycoonListener implements Listener {
                     if (region != null && selectedCrop != null) {
                         replaceCropsForPlayerInRegion(player, region, selectedCrop);
                     } else {
-                        player.sendMessage("§cCould not update crops. Region or crop type not found.");
+                        player.sendMessage(ChatColor.RED + "Could not update crops. Region or crop type not found.");
                     }
                     plugin.getDataStorage().savePlayerSelectedCrop(player.getUniqueId(), selectedCrop.getBlockMaterial());
                 }
@@ -344,8 +344,6 @@ public class FarmTycoonListener implements Listener {
             }
         }
     }
-
-
 
     /**
      * Show the player all crops in the specified region as their selected crop type.
@@ -372,8 +370,7 @@ public class FarmTycoonListener implements Listener {
         BlockVector3 min = region.getMinimumPoint();
         BlockVector3 max = region.getMaximumPoint();
         World world = player.getWorld();
-
-        List<Location> cropLocations = new ArrayList<>();
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 
         // Iterate through all blocks in the region
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
@@ -382,7 +379,7 @@ public class FarmTycoonListener implements Listener {
                     Location loc = new Location(world, x, y, z);
                     Block block = loc.getBlock();
                     if (isCropType(block.getType())) {
-                        cropLocations.add(loc);
+                        sendFakeBlockChange(player, block, blockData);
                     }
                 }
             }
@@ -390,23 +387,14 @@ public class FarmTycoonListener implements Listener {
 
         // Update crops in batches to prevent server lag
         new BukkitRunnable() {
-            int index = 0;
 
             @Override
             public void run() {
-                int processed = 0;
-                while (processed < 100 && index < cropLocations.size()) {
-                    Location loc = cropLocations.get(index++);
-                    Block block = loc.getBlock();
-                    sendFakeBlockChange(player, block, blockData);
-                    processed++;
-                }
-                if (index >= cropLocations.size()) {
-                    cancel();
                     player.sendMessage("§aCrops updated to " + cropType.getDisplayName() + "!");
                 }
-            }
-        }.runTaskTimer(plugin, 0L, 1L);
+
+        }.runTask(plugin);
+        });
     }
 
 
@@ -417,33 +405,51 @@ public class FarmTycoonListener implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         Block block = event.getBlock();
+        UUID playerId = player.getUniqueId();
 
         if (!player.getWorld().getName().equalsIgnoreCase("FarmWorld")) {
-            return; // Only track blocks in GensSpawn
+            return; // Only track blocks in the FarmWorld
         }
 
         if (!isCropType(block.getType())) return;
 
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            sendFakeBlockChange(player, block, Bukkit.createBlockData(Material.AIR));
-        });
-
-
-        Material selectedCrop = plugin.getSelectedCrop(player);
+        Material selectedCrop = plugin.getSelectedCrop(player); // Fetch player's selected ore
         if (selectedCrop == null) {
-            player.sendMessage("§cYou have no crop selected!");
+            player.sendMessage(ChatColor.RED + "You have no crop selected!");
+            event.setCancelled(true);
             return;
         }
 
         CropType cropType = CropType.fromMaterial(selectedCrop);
         if (cropType == null) {
-            player.sendMessage("§cInvalid crop selected!");
+            player.sendMessage(ChatColor.RED + "Invalid crop selected!");
+            event.setCancelled(true);
             return;
         }
 
-        // Record that this block is "broken" for this player
-        brokenBlockLocation = block.getLocation();
-        breakerPlayer = player;
+        // Check prestige requirement
+        if (PrestigeManager.getPlayerPrestige(player) < cropType.getRequiredPrestige()) {
+            player.sendMessage("§cYou need Prestige " + cropType.getRequiredPrestige() + " to mine this crop!");
+            event.setCancelled(true);
+            return;
+        }
+
+        //make sure we're using a hoeif not cancel
+        if(player.getInventory().getItemInMainHand().getType() != Material.WOODEN_HOE &&
+                player.getInventory().getItemInMainHand().getType() != Material.STONE_HOE &&
+                player.getInventory().getItemInMainHand().getType() != Material.IRON_HOE &&
+                player.getInventory().getItemInMainHand().getType() != Material.GOLDEN_HOE &&
+                player.getInventory().getItemInMainHand().getType() != Material.DIAMOND_HOE &&
+                player.getInventory().getItemInMainHand().getType() != Material.NETHERITE_HOE)
+        {
+            player.sendMessage("§cYou must use a hoe to break crops!");
+            event.setCancelled(true);
+            return;
+        }
+
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            sendFakeBlockChange(player, block, Bukkit.createBlockData(Material.AIR));
+        });
 
         event.setCancelled(true);
 
@@ -474,7 +480,9 @@ public class FarmTycoonListener implements Listener {
 
         int totalXP = (int) (getBaseXP(selectedCrop) * SkriptManager.getMultiplier(player)); // Calculate total XP
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "levels addExp " + totalXP + " " + player.getName());
-        SkriptManager.addTokens(player, totalXP); // Add tokens equivalent to base XP
+        double tokensPerXP = 220.0 / 5.0;
+        int tokens = (int) (totalXP * tokensPerXP);
+        SkriptManager.addTokens(player, tokens); // Add tokens based on the calculated ratio
 
 
         Location loc = event.getBlock().getLocation();
@@ -501,10 +509,6 @@ public class FarmTycoonListener implements Listener {
                     ((Waterlogged) cropData).setWaterlogged(false);
                 }
                 sendFakeBlockChange(player, block, cropData);
-
-                // Restore normal behavior
-                brokenBlockLocation = null;
-                breakerPlayer = null;
             }
         }.runTaskLater(plugin, rand.nextInt(40) + 60);
     }
@@ -514,6 +518,13 @@ public class FarmTycoonListener implements Listener {
         packet.getBlockPositionModifier().write(0, new BlockPosition(block.getX(), block.getY(), block.getZ()));
         packet.getBlockData().write(0, WrappedBlockData.createData(blockData));
         protocolManager.sendServerPacket(player, packet, false);
+    }
+
+
+    @EventHandler
+    public void onDisconnect(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        plugin.getDataStorage().savePlayerData();
     }
 
 
@@ -535,5 +546,21 @@ public class FarmTycoonListener implements Listener {
 
     private int getBaseXP(Material cropType) {
         return CropType.getXpForCrop(cropType);
+    }
+
+    public void spawnClones(Player player)
+    {
+        for(int i = 0; i < 3; i++)
+        {
+            PacketListener listener = new PacketAdapter(plugin, PacketType.Play.Server.NAMED_ENTITY_SPAWN) {
+                @Override
+                public void onPacketSending(PacketEvent event) {
+                    if(event.getPlayer().getUniqueId() == player.getUniqueId())
+                    {
+                        event.setCancelled(true);
+                    }
+                }
+            };
+        }
     }
 }

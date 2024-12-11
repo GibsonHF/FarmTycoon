@@ -7,6 +7,9 @@ commands:
   farmgui:
     description: Open the crop selection GUI.
     usage: /farmgui
+  minegui:
+    description: Open the mine selection GUI.
+    usage: /minegui
   prestige:
     description: Prestige to the next level.
     usage: /prestige
@@ -25,6 +28,10 @@ commands:
     usage: /ggwave <player>
     permission: farmtycoon.admin
     permission-message: You do not have permission to use this command.
+  setprestige:
+    description: Set a player's prestige level
+    usage: /setprestige <player> <level>
+    permission: cropPlugin.setprestige
 permissions:
   farmtycoon.admin:
     description: Permission to manage player prestige levels.

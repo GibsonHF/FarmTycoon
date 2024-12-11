@@ -6,12 +6,13 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import me.gibson.cropPlugin.commands.*;
-import me.gibson.cropPlugin.listeners.FarmTycoonListener;
+import me.gibson.cropPlugin.listeners.*;
 import me.gibson.cropPlugin.commands.GGWaveCommand;
 import me.gibson.cropPlugin.managers.EconomyManager;
 import me.gibson.cropPlugin.managers.PrestigeManager;
 import me.gibson.cropPlugin.placeholders.PrestigePlaceholder;
-import me.gibson.cropPlugin.utils.CropType;
+import me.gibson.cropPlugin.types.CropType;
+import me.gibson.cropPlugin.types.OreType;
 import me.gibson.cropPlugin.utils.DataStorage;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -25,9 +26,11 @@ public class FarmTycoonPlugin extends JavaPlugin {
 
     private final Map<UUID, Integer> playerPrestige = new HashMap<>();
     private final Map<UUID, Material> selectedCrop = new HashMap<>();
+    private final Map<UUID, Material> selectedOre = new HashMap<>();
     private final Map<UUID, Map<Location, Material>> playerBlockData = new HashMap<>();
     private DataStorage dataStorage;
     private String farmRegionName;
+    public String mineRegionName;
     private RegionContainer regionContainer;
 
     @Override
@@ -35,11 +38,10 @@ public class FarmTycoonPlugin extends JavaPlugin {
         this.dataStorage = new DataStorage(this);
         dataStorage.loadPlayerData();
         farmRegionName = getConfig().getString("farmRegion.name", "FarmRegion");
-       // keepRegionChunksLoaded(getFarmRegionName());
-        // Save the default configuration file if it doesn't exist
+        mineRegionName = getConfig().getString("mineRegion.name", "MineRegion");
         saveDefaultConfig();
-        // Load crops from the configuration into CropType
         CropType.loadCropTypes(getConfig());
+        OreType.loadOreTypes(getConfig());
         if (!setupWorldGuard()) {
             getLogger().severe("WorldGuard not found! Disabling plugin...");
             getServer().getPluginManager().disablePlugin(this);
@@ -56,14 +58,26 @@ public class FarmTycoonPlugin extends JavaPlugin {
             new PrestigePlaceholder(new PrestigeManager(this)).register();
         }
         getLogger().info("Vault economy hooked successfully!");
+
+
+        /* Register commands */
         getCommand("farmgui").setExecutor(new FarmGUICommand(this));
         getCommand("prestige").setExecutor(new PrestigeCommand());
         getCommand("condense").setExecutor(new CondenseCommand());
         getCommand("sell").setExecutor(new SellCommand(EconomyManager.getEconomy()));
         getCommand("gems").setExecutor(new GemsCommand());
         getCommand("ggwave").setExecutor(new GGWaveCommand(this));
+        getCommand("setprestige").setExecutor(new SetPrestigeCommand());
+        getCommand("minegui").setExecutor(new MineGUICommand(this));
+        /* End Commands */
+
+        /* Register listeners */
         getServer().getPluginManager().registerEvents(new GGWaveCommand(this), this);
-        getServer().getPluginManager().registerEvents(new FarmTycoonListener(this), this);
+        getServer().getPluginManager().registerEvents(new FarmListener(this), this);
+        getServer().getPluginManager().registerEvents(new InventoryListener(), this);
+        getServer().getPluginManager().registerEvents(new MineListener(this), this);
+        getServer().getPluginManager().registerEvents(new FishingListener(this), this);
+        /* End Listeners */
 
         getLogger().info("FarmTycoonPlugin Enabled!");
     }
@@ -139,4 +153,20 @@ public class FarmTycoonPlugin extends JavaPlugin {
 
     public final Map<UUID, BukkitRunnable> playerTasks = new HashMap<>();
 
+    public Material getSelectedOre(Player player) {
+        return selectedOre.getOrDefault(player.getUniqueId(), Material.COAL_ORE);
+    }
+
+   public String getMineRegionName() {
+        return mineRegionName;
+    }
+
+    public void setSelectedOre(Player player, Material ore) {
+        selectedOre.put(player.getUniqueId(), ore);
+        dataStorage.savePlayerSelectedOre(player.getUniqueId(), ore);
+    }
+
+    public Map<UUID, Material> getSelectedBlockMap() {
+        return selectedOre;
+    }
 }

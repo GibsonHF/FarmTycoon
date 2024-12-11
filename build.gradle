@@ -31,11 +31,16 @@ repositories {
         name = 'dmulloy2-repo'
         url = 'https://repo.dmulloy2.net/repository/public/'
     }
+    maven {
+        name = 'papermc'
+        url = 'https://repo.papermc.io/repository/maven-public/'
+    }
 
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.21-R0.1-SNAPSHOT")
+    compileOnly 'io.papermc.paper:paper-api:1.21-R0.1-20240810.100446-132'
+   // compileOnly("org.spigotmc:spigot-api:1.21-R0.1-SNAPSHOT")
     implementation 'com.github.SkriptLang:Skript:2.9.5'
     implementation 'com.github.MilkBowl:VaultAPI:1.7'
     compileOnly 'com.comphenix.protocol:ProtocolLib:5.1.0'

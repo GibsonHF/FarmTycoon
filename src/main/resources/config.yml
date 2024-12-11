@@ -1,48 +1,274 @@
 # Farm Tycoon Plugin Configuration
 farmRegion:
   name: "FarmRegion"
+mineRegion:
+  name: "MineRegion"
 prestige:
   multiplierIncrement: 0.25
 crops:
-  wheat:
-    blockMaterial: WHEAT
-    itemMaterial: WHEAT
-    displayName: "Wheat"
+  nether_wart:
+    blockMaterial: NETHER_WART
+    itemMaterial: NETHER_WART
+    displayName: "Nether Wart"
     requiredPrestige: 0
     xp: 5
-
+  red_tulip:
+    blockMaterial: RED_TULIP
+    itemMaterial: RED_TULIP
+    displayName: "Red Tulip"
+    requiredPrestige: 5
+    xp: 10
+  poppy:
+    blockMaterial: POPPY
+    itemMaterial: POPPY
+    displayName: "Poppy"
+    requiredPrestige: 15
+    xp: 15
+  fire_coral:
+    blockMaterial: FIRE_CORAL
+    itemMaterial: FIRE_CORAL
+    displayName: "Fire Coral"
+    requiredPrestige: 30
+    xp: 20
+  rose_bush:
+    blockMaterial: ROSE_BUSH
+    itemMaterial: ROSE_BUSH
+    displayName: "Rose Bush"
+    requiredPrestige: 45
+    xp: 25
+  crimson_fungus:
+    blockMaterial: CRIMSON_FUNGUS
+    itemMaterial: CRIMSON_FUNGUS
+    displayName: "Crimson Fungus"
+    requiredPrestige: 65
+    xp: 30
   carrots:
     blockMaterial: CARROTS
     itemMaterial: CARROT
     displayName: "Carrots"
-    requiredPrestige: 5
-    xp: 10
-
-  potatoes:
-    blockMaterial: POTATOES
-    itemMaterial: POTATO
-    displayName: "Potatoes"
-    requiredPrestige: 10
-    xp: 15
-
-  beetroots:
-    blockMaterial: BEETROOTS
-    itemMaterial: BEETROOT
-    displayName: "Beetroots"
-    requiredPrestige: 15
-    xp: 20
-
+    requiredPrestige: 85
+    xp: 35
+  orange_tulip:
+    blockMaterial: ORANGE_TULIP
+    itemMaterial: ORANGE_TULIP
+    displayName: "Orange Tulip"
+    requiredPrestige: 105
+    xp: 40
+  horn_coral:
+    blockMaterial: HORN_CORAL
+    itemMaterial: HORN_CORAL
+    displayName: "Horn Coral"
+    requiredPrestige: 125
+    xp: 45
+  wheat:
+    blockMaterial: WHEAT
+    itemMaterial: WHEAT
+    displayName: "Wheat"
+    requiredPrestige: 150
+    xp: 50
+  sunflower:
+    blockMaterial: SUNFLOWER
+    itemMaterial: SUNFLOWER
+    displayName: "Sunflower"
+    requiredPrestige: 175
+    xp: 55
+  dandelion:
+    blockMaterial: DANDELION
+    itemMaterial: DANDELION
+    displayName: "Dandelion"
+    requiredPrestige: 200
+    xp: 60
+  mangrove_propagule:
+    blockMaterial: MANGROVE_PROPAGULE
+    itemMaterial: MANGROVE_PROPAGULE
+    displayName: "Mangrove Propagule"
+    requiredPrestige: 225
+    xp: 65
+  grass:
+    blockMaterial: GRASS
+    itemMaterial: GRASS
+    displayName: "Grass"
+    requiredPrestige: 250
+    xp: 70
+  fern:
+    blockMaterial: FERN
+    itemMaterial: FERN
+    displayName: "Fern"
+    requiredPrestige: 275
+    xp: 75
+  large_fern:
+    blockMaterial: LARGE_FERN
+    itemMaterial: LARGE_FERN
+    displayName: "Large Fern"
+    requiredPrestige: 300
+    xp: 80
+  tube_coral:
+    blockMaterial: TUBE_CORAL
+    itemMaterial: TUBE_CORAL
+    displayName: "Tube Coral"
+    requiredPrestige: 325
+    xp: 85
   blue_orchid:
     blockMaterial: BLUE_ORCHID
     itemMaterial: BLUE_ORCHID
     displayName: "Blue Orchid"
-    requiredPrestige: 20
-    xp: 25
-
+    requiredPrestige: 350
+    xp: 90
+  cornflower:
+    blockMaterial: CORNFLOWER
+    itemMaterial: CORNFLOWER
+    displayName: "Cornflower"
+    requiredPrestige: 375
+    xp: 95
+  bubble_coral:
+    blockMaterial: BUBBLE_CORAL
+    itemMaterial: BUBBLE_CORAL
+    displayName: "Bubble Coral"
+    requiredPrestige: 400
+    xp: 100
+  brain_coral:
+    blockMaterial: BRAIN_CORAL
+    itemMaterial: BRAIN_CORAL
+    displayName: "Brain Coral"
+    requiredPrestige: 450
+    xp: 105
+  warped_fungus:
+    blockMaterial: WARPED_FUNGUS
+    itemMaterial: WARPED_FUNGUS
+    displayName: "Warped Fungus"
+    requiredPrestige: 500
+    xp: 110
+  spruce_sapling:
+    blockMaterial: SPRUCE_SAPLING
+    itemMaterial: SPRUCE_SAPLING
+    displayName: "Spruce Sapling"
+    requiredPrestige: 550
+    xp: 115
+  azure_bluet:
+    blockMaterial: AZURE_BLUET
+    itemMaterial: AZURE_BLUET
+    displayName: "Azure Bluet"
+    requiredPrestige: 600
+    xp: 120
+  sweet_berries:
+    blockMaterial: SWEET_BERRIES
+    itemMaterial: SWEET_BERRIES
+    displayName: "Sweet Berries"
+    requiredPrestige: 650
+    xp: 125
   lilac:
     blockMaterial: LILAC
     itemMaterial: LILAC
     displayName: "Lilac"
+    requiredPrestige: 700
+    xp: 130
+  allium:
+    blockMaterial: ALLIUM
+    itemMaterial: ALLIUM
+    displayName: "Allium"
+    requiredPrestige: 800
+    xp: 135
+  pink_tulip:
+    blockMaterial: PINK_TULIP
+    itemMaterial: PINK_TULIP
+    displayName: "Pink Tulip"
+    requiredPrestige: 900
+    xp: 140
+  peony:
+    blockMaterial: PEONY
+    itemMaterial: PEONY
+    displayName: "Peony"
+    requiredPrestige: 1000
+    xp: 145
+  cherry_sapling:
+    blockMaterial: CHERRY_SAPLING
+    itemMaterial: CHERRY_SAPLING
+    displayName: "Cherry Sapling"
+    requiredPrestige: 1100
+    xp: 150
+  white_tulip:
+    blockMaterial: WHITE_TULIP
+    itemMaterial: WHITE_TULIP
+    displayName: "White Tulip"
+    requiredPrestige: 1200
+    xp: 155
+  lily_of_the_valley:
+    blockMaterial: LILY_OF_THE_VALLEY
+    itemMaterial: LILY_OF_THE_VALLEY
+    displayName: "Lily of the Valley"
+    requiredPrestige: 1300
+    xp: 160
+  oxeye_daisy:
+    blockMaterial: OXEYE_DAISY
+    itemMaterial: OXEYE_DAISY
+    displayName: "Oxeye Daisy"
+    requiredPrestige: 1400
+    xp: 165
+  dead_bush:
+    blockMaterial: DEAD_BUSH
+    itemMaterial: DEAD_BUSH
+    displayName: "Dead Bush"
+    requiredPrestige: 1500
+    xp: 170
+ores:
+  COAL_ORE:
+    blockMaterial: COAL_ORE
+    itemMaterial: COAL_ORE
+    displayName: "Coal Ore"
+    requiredPrestige: 0
+    xp: 5
+  IRON_ORE:
+    blockMaterial: IRON_ORE
+    itemMaterial: IRON_ORE
+    displayName: "Iron Ore"
+    requiredPrestige: 5
+    xp: 10
+  COPPER_ORE:
+    blockMaterial: COPPER_ORE
+    itemMaterial: COPPER_ORE
+    displayName: "Copper Ore"
+    requiredPrestige: 10
+    xp: 15
+  GOLD_ORE:
+    blockMaterial: GOLD_ORE
+    itemMaterial: GOLD_ORE
+    displayName: "Gold Ore"
+    requiredPrestige: 15
+    xp: 20
+  REDSTONE_ORE:
+    blockMaterial: REDSTONE_ORE
+    itemMaterial: REDSTONE_ORE
+    displayName: "Redstone Ore"
+    requiredPrestige: 20
+    xp: 25
+  LAPIS_ORE:
+    blockMaterial: LAPIS_ORE
+    itemMaterial: LAPIS_ORE
+    displayName: "Lapis Ore"
     requiredPrestige: 25
     xp: 30
+  DIAMOND_ORE:
+    blockMaterial: DIAMOND_ORE
+    itemMaterial: DIAMOND_ORE
+    displayName: "Diamond Ore"
+    requiredPrestige: 30
+    xp: 35
+  EMERALD_ORE:
+    blockMaterial: EMERALD_ORE
+    itemMaterial: EMERALD_ORE
+    displayName: "Emerald Ore"
+    requiredPrestige: 35
+    xp: 40
+  ANCIENT_DEBRIS:
+    blockMaterial: ANCIENT_DEBRIS
+    itemMaterial: ANCIENT_DEBRIS
+    displayName: "Ancient Debris"
+    requiredPrestige: 40
+    xp: 45
+  AMETHYST_BLOCK:
+    blockMaterial: AMETHYST_BLOCK
+    itemMaterial: AMETHYST_BLOCK
+    displayName: "Amethyst Block"
+    requiredPrestige: 45
+    xp: 50
 

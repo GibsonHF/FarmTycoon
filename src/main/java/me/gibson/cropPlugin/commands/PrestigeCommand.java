@@ -1,6 +1,6 @@
 package me.gibson.cropPlugin.commands;
 
-import me.gibson.cropPlugin.utils.PrestigeGUI;
+import me.gibson.cropPlugin.GUI.PrestigeGUI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

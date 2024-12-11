@@ -5,9 +5,11 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -34,8 +36,13 @@ public class DataStorage {
 
             // Load selected crop
             Material selectedCrop = Material.getMaterial(playerDataConfig.getString(key + ".selectedCrop", "WHEAT"));
+            Material selectedOre = Material.getMaterial(playerDataConfig.getString(key + ".selectedOre", "COAL_ORE"));
             if (selectedCrop != null) {
                 plugin.getSelectedCropMap().put(playerId, selectedCrop);
+            }
+
+            if (selectedOre != null) {
+                plugin.getSelectedBlockMap().put(playerId, selectedOre);
             }
 
             // Load prestige
@@ -53,6 +60,7 @@ public class DataStorage {
             savePlayerPrestige(playerId, plugin.getPlayerPrestigeMap().get(playerId));
             savePlayerSelectedCrop(playerId, plugin.getSelectedCropMap().get(playerId));
             savePlayerBlockMaterials(playerId, plugin.getPlayerBlockDataMap().get(playerId));
+            savePlayerSelectedOre(playerId, plugin.getSelectedBlockMap().get(playerId));
         }
         try {
             playerDataConfig.save(playerDataFile);
@@ -113,4 +121,12 @@ public class DataStorage {
     public Material getPlayerSelectedCrop(UUID uniqueId) {
         return plugin.getSelectedCropMap().get(uniqueId);
     }
+
+    public void savePlayerSelectedOre(UUID playerId, Material ore) {
+        if (ore != null) {
+            playerDataConfig.set(playerId.toString() + ".selectedOre", ore.name());
+        }
+        saveConfig();
+    }
+
 }

@@ -1,5 +1,6 @@
 package me.gibson.cropPlugin.commands;
 
+import me.gibson.cropPlugin.GUI.ConfirmPayGUI;
 import me.gibson.cropPlugin.managers.SkriptManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -73,12 +74,15 @@ public class GemsCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
 
-            // Perform the transaction
-            SkriptManager.addGems(targetPlayer, amount);
-            SkriptManager.setGems(payer, payerGems - amount);
+            ConfirmPayGUI.openConfirmPayGUI(payer, targetPlayer, amount);
 
-            payer.sendMessage("§aYou have successfully paid §6" + amount + " §agems to " + targetPlayer.getName() + ".");
-            targetPlayer.sendMessage("§aYou have received §6" + amount + " §agems from " + payer.getName() + ".");
+
+//            // Perform the transaction
+//            SkriptManager.addGems(targetPlayer, amount);
+//            SkriptManager.setGems(payer, payerGems - amount);
+//
+//            payer.sendMessage("§aYou have successfully paid §6" + amount + " §agems to " + targetPlayer.getName() + ".");
+//            targetPlayer.sendMessage("§aYou have received §6" + amount + " §agems from " + payer.getName() + ".");
             return true;
         }
 

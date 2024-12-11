@@ -1,4 +1,4 @@
-package me.gibson.cropPlugin.utils;
+package me.gibson.cropPlugin.types;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;

@@ -7,6 +7,7 @@ import ch.njol.skript.variables.Variables;
 import me.gibson.cropPlugin.FarmTycoonPlugin;
 import me.gibson.cropPlugin.utils.PrestigeRequirement;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 public class PrestigeManager {
@@ -37,7 +38,7 @@ public class PrestigeManager {
 
 
     // Get the player's current prestige level from Skript
-    public static int getPlayerPrestige(Player player) {
+    public static int getPlayerPrestige(OfflinePlayer player) {
         String variableName = "prestige::" + player.getUniqueId();
         Object prestige = Variables.getVariable(variableName, null, false);
 
@@ -67,7 +68,7 @@ public class PrestigeManager {
     // Handle the prestige process
     public static boolean prestige(Player player) {
         int currentLevel = SkriptManager.getLevel(player);
-        int currentTokens = SkriptManager.getTokens(player);
+        double currentTokens = SkriptManager.getTokens(player);
         double currentMoney = EconomyManager.getEconomy().getBalance(player);
 
         // Get the next prestige requirement
@@ -85,12 +86,12 @@ public class PrestigeManager {
             return false;
         }
         if (currentTokens < requirement.getRequiredTokens()) {
-            player.sendMessage("§cYou need " + requirement.getRequiredTokens() + " tokens to prestige!");
+            player.sendMessage("§cYou need " +  formatLargeNumber(requirement.getRequiredTokens()) + " tokens to prestige!");
             player.closeInventory();
             return false;
         }
         if (currentMoney < requirement.getRequiredMoney()) {
-            player.sendMessage("§cYou need $" + requirement.getRequiredMoney() + " to prestige!");
+            player.sendMessage("§cYou need $" + formatLargeNumber(requirement.getRequiredMoney()) + " to prestige!");
             player.closeInventory();
             return false;
         }
@@ -109,5 +110,19 @@ public class PrestigeManager {
         player.sendMessage("§aCongratulations! You are now Prestige " + getPlayerPrestige(player) + "!");
         player.sendMessage("§aYour new multiplier is " + (1.0 + (getPlayerPrestige(player) * multiplierIncrement)) + "x.");
         return true;
+    }
+
+    private static String formatLargeNumber(double value) {
+        if (value >= 1_000_000_000_000L) {
+            return String.format("%.2fT", value / 1_000_000_000_000L); // Trillions
+        } else if (value >= 1_000_000_000) {
+            return String.format("%.2fB", value / 1_000_000_000); // Billions
+        } else if (value >= 1_000_000) {
+            return String.format("%.2fM", value / 1_000_000); // Millions
+        } else if (value >= 1_000) {
+            return String.format("%.2fK", value / 1_000); // Thousands
+        } else {
+            return String.valueOf((int) value);
+        }
     }
 }
