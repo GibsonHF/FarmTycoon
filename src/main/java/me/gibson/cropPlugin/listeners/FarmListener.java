@@ -16,14 +16,11 @@ import me.gibson.cropPlugin.types.CropType;
 import me.gibson.cropPlugin.FarmTycoonPlugin;
 import me.gibson.cropPlugin.managers.PrestigeManager;
 import me.gibson.cropPlugin.managers.SkriptManager;
-import me.gibson.cropPlugin.types.OreType;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Waterlogged;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -546,21 +543,5 @@ public class FarmListener implements Listener {
 
     private int getBaseXP(Material cropType) {
         return CropType.getXpForCrop(cropType);
-    }
-
-    public void spawnClones(Player player)
-    {
-        for(int i = 0; i < 3; i++)
-        {
-            PacketListener listener = new PacketAdapter(plugin, PacketType.Play.Server.NAMED_ENTITY_SPAWN) {
-                @Override
-                public void onPacketSending(PacketEvent event) {
-                    if(event.getPlayer().getUniqueId() == player.getUniqueId())
-                    {
-                        event.setCancelled(true);
-                    }
-                }
-            };
-        }
     }
 }

@@ -15,7 +15,11 @@ import me.gibson.cropPlugin.types.CropType;
 import me.gibson.cropPlugin.types.OreType;
 import me.gibson.cropPlugin.utils.DataStorage;
 import org.bukkit.*;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -69,6 +73,7 @@ public class FarmTycoonPlugin extends JavaPlugin {
         getCommand("ggwave").setExecutor(new GGWaveCommand(this));
         getCommand("setprestige").setExecutor(new SetPrestigeCommand());
         getCommand("minegui").setExecutor(new MineGUICommand(this));
+        getCommand("replacecrops").setExecutor(new ReplaceCropsCommand(this));
         /* End Commands */
 
         /* Register listeners */
@@ -168,5 +173,33 @@ public class FarmTycoonPlugin extends JavaPlugin {
 
     public Map<UUID, Material> getSelectedBlockMap() {
         return selectedOre;
+    }
+
+    // Create Omni Tool
+    public ItemStack createOmniTool() {
+        ItemStack tool = new ItemStack(Material.DIAMOND_HOE);
+        ItemMeta meta = tool.getItemMeta();
+        meta.setDisplayName(rainbowText("Gens Omni Tool"));
+        List<String> lore = Arrays.asList(
+                ChatColor.GRAY + "A powerful farming tool.",
+                ChatColor.LIGHT_PURPLE + "Right-click to open the Enchantments Menu!"
+        );
+        meta.setLore(lore);
+        meta.addEnchant(Enchantment.UNBREAKING, 1, true);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        tool.setItemMeta(meta);
+        return tool;
+    }
+
+    public String rainbowText(String input) {
+        ChatColor[] colors = {ChatColor.RED, ChatColor.GOLD, ChatColor.YELLOW, ChatColor.GREEN, ChatColor.AQUA, ChatColor.BLUE, ChatColor.LIGHT_PURPLE};
+        StringBuilder result = new StringBuilder();
+        int colorIndex = 0;
+
+        for (char c : input.toCharArray()) {
+            result.append(colors[colorIndex]).append(c);
+            colorIndex = (colorIndex + 1) % colors.length;
+        }
+        return result.toString();
     }
 }

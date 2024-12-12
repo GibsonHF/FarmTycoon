@@ -32,6 +32,10 @@ commands:
     description: Set a player's prestige level
     usage: /setprestige <player> <level>
     permission: cropPlugin.setprestige
+  replacecrops:
+    description: Replace all crops above farmland with the specified crop at max age.
+    usage: /replacecrops <crop>
+    permission: farmtycoon.replacecrops
 permissions:
   farmtycoon.admin:
     description: Permission to manage player prestige levels.
