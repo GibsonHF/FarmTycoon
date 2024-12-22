@@ -2,6 +2,7 @@ name: CropPlugin
 version: '1.0-SNAPSHOT'
 main: me.gibson.cropPlugin.FarmTycoonPlugin
 api-version: '1.21'
+depend: ["NBTAPI"]
 softdepend: ["PlaceholderAPI"]
 commands:
   farmgui:

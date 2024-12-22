@@ -5,6 +5,8 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import de.tr7zw.nbtapi.NBT;
+import me.gibson.cropPlugin.GUI.UpgradeGUI;
 import me.gibson.cropPlugin.commands.*;
 import me.gibson.cropPlugin.listeners.*;
 import me.gibson.cropPlugin.commands.GGWaveCommand;
@@ -62,7 +64,11 @@ public class FarmTycoonPlugin extends JavaPlugin {
             new PrestigePlaceholder(new PrestigeManager(this)).register();
         }
         getLogger().info("Vault economy hooked successfully!");
-
+        if (!NBT.preloadApi()) {
+            getLogger().warning("NBT-API wasn't initialized properly, disabling the plugin");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         /* Register commands */
         getCommand("farmgui").setExecutor(new FarmGUICommand(this));
@@ -82,6 +88,7 @@ public class FarmTycoonPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new InventoryListener(), this);
         getServer().getPluginManager().registerEvents(new MineListener(this), this);
         getServer().getPluginManager().registerEvents(new FishingListener(this), this);
+        getServer().getPluginManager().registerEvents(new UpgradeGUI(), this);
         /* End Listeners */
 
         getLogger().info("FarmTycoonPlugin Enabled!");

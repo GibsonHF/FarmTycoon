@@ -12,10 +12,12 @@ import com.comphenix.protocol.wrappers.WrappedBlockData;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import me.gibson.cropPlugin.GUI.UpgradeGUI;
 import me.gibson.cropPlugin.types.CropType;
 import me.gibson.cropPlugin.FarmTycoonPlugin;
 import me.gibson.cropPlugin.managers.PrestigeManager;
 import me.gibson.cropPlugin.managers.SkriptManager;
+import me.gibson.cropPlugin.utils.ToolUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
@@ -517,6 +519,45 @@ public class FarmListener implements Listener {
         protocolManager.sendServerPacket(player, packet, false);
     }
 
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+
+        // Check if the player already has a farming tool
+        boolean hasFarmingTool = false;
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item != null && ToolUtils.isFarmingTool(item)) {
+                hasFarmingTool = true;
+                break;
+            }
+        }
+
+        // If the player doesn't have a farming tool, give them one
+        if (!hasFarmingTool) {
+            ItemStack defaultTool = ToolUtils.createFarmingTool(1, Material.WOODEN_HOE, "&6", "&a");
+            player.getInventory().addItem(defaultTool);
+            player.sendMessage("§aYou have been given a Tier 1 Farming Tool!");
+        }
+    }
+
+    @EventHandler
+    public void onPlayerRightClick(PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        ItemStack tool = player.getInventory().getItemInMainHand();
+
+        // Check if the item in hand is a farming tool
+        if (ToolUtils.isFarmingTool(tool)) {
+            event.setCancelled(true); // Cancel default interaction
+
+            // Open the upgrade GUI
+            UpgradeGUI.openUpgradeGUI(player, tool);
+            player.sendMessage("§6Opening upgrade menu for your Farming Tool...");
+        }
+    }
 
     @EventHandler
     public void onDisconnect(PlayerQuitEvent event) {
